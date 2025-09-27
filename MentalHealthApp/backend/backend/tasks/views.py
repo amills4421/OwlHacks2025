@@ -1,25 +1,31 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
-from .models import TaskReference
+from django.core.files.storage import default_storage
+#from .models import TaskReference
+import os
+
 from .ml.clip_model import get_image_embedding, cosine_similarity
 
 class CompareClean(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
-    def post(self, request, format=None):
+    def post(self, request, *args, **kwargs):
         task_id = request.data.get("task_id")
-        image_file = request.data.get("image")
+        uploaded_image = request.data.get("image")
 
-        # Get user reference image from DB
-        reference = TaskReference.objects.get(task_id=task_id, user=request.user)
+        # Save uploaded file temporarily
+        file_path = default_storage.save(uploaded_image.name, uploaded_image)
 
-        # Compute embeddings
-        ref_embedding = get_image_embedding(reference.image.path)
-        new_embedding = get_image_embedding(image_file)
+        # Load reference image (for demo, assume it's static in ./references)
+        reference_path = os.path.join("references", f"{task_id}.jpg")
 
-        score = cosine_similarity(ref_embedding, new_embedding)
+        # Get embeddings
+        ref_emb = get_image_embedding(reference_path)
+        new_emb = get_image_embedding(file_path)
 
+        # Compute similarity
+        score = cosine_similarity(ref_emb, new_emb)
         feedback = "Looks clean!" if score > 0.8 else "Needs improvement."
 
         return Response({
