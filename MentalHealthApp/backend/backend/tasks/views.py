@@ -35,7 +35,7 @@ class compare_clean(APIView):
             "feedback": feedback
         })
 
-class analyze_image(APIView):
+class suggest_clean(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
