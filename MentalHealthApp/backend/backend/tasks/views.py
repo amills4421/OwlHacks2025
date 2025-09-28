@@ -7,7 +7,7 @@ import os
 
 from .ml.clip_model import get_image_embedding, cosine_similarity
 
-class CompareClean(APIView):
+class compare_clean(APIView):
     parser_classes = (MultiPartParser, FormParser)
 
     def post(self, request, *args, **kwargs):
@@ -26,7 +26,7 @@ class CompareClean(APIView):
 
         # Compute similarity
         score = cosine_similarity(ref_emb, new_emb)
-        feedback = "Looks clean!" if score > 0.8 else "Needs improvement."
+        feedback = "Looks clean!" if score > 0.9 else "Needs improvement."
 
         return Response({
             "task_id": task_id,
