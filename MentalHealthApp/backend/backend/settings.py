@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-x)cq#gbalj!6u6-t)r1pyd(o)l1bs1i=lin+c6d+j#+r4p%x=$
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*", "10.0.2.2", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -115,3 +115,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 INSTALLED_APPS += ['corsheaders']
 MIDDLEWARE = ['corsheaders.middleware.CorsMiddleware'] + MIDDLEWARE
 CORS_ALLOW_ALL_ORIGINS = True
+
+# For file uploads 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
