@@ -6,6 +6,7 @@ from django.core.files.storage import default_storage
 import os
 
 from .ml.clip_model import get_image_embedding, cosine_similarity
+from .ml.blip2_model import generate_caption
 
 class compare_clean(APIView):
     parser_classes = (MultiPartParser, FormParser)
@@ -32,4 +33,22 @@ class compare_clean(APIView):
             "task_id": task_id,
             "score": float(score),
             "feedback": feedback
+        })
+
+class analyze_image(APIView):
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        uploaded_image = request.data.get("image")
+        file_path = default_storage.save(uploaded_image.name, uploaded_image)
+
+        try:
+            caption = generate_caption(file_path, prompt="What looks disorganized here?")
+        finally:
+            if default_storage.exists(file_path):
+                default_storage.delete(file_path)
+
+        return Response({
+            "caption": caption,
+            "feedback": f"AI detected: {caption}"
         })
